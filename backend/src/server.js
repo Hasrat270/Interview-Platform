@@ -1,7 +1,8 @@
 import express from "express";
-import mongoose from "mongoose";
 import path from "path";
+
 import { ENV } from "./lib/env.js";
+import { connectDB } from "./lib/db.js";
 
 const app = express();
 
@@ -24,6 +25,15 @@ app.get("/{*any}", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
 });
 
-app.listen(ENV.PORT, () => {
-  console.log(`Server Running on Port: ${ENV.PORT}`);
-});
+const startServer = async () => {
+  try {
+    await connectDB();
+    app.listen(ENV.PORT, () => {
+      console.log(`🚀 Server running on http://localhost:${ENV.PORT}`);
+    });
+  } catch (error) {
+    console.error("Server startup error:", error);
+  }
+};
+
+startServer();
